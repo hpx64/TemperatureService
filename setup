@@ -1,0 +1,50 @@
+#!/bin/bash
+
+dtOverlayFile="/u-boot/overlays/w1-gpio.dtbo"
+configTxt="/u-boot/config.txt"
+
+packageLogFile="/var/log/TemperatureService/current"
+
+#### following line incorporates helper resources into this script
+source "/data/SetupHelper/HelperResources/IncludeHelpers"
+#### end of lines to include helper resources
+
+if [ $scriptAction == 'NONE' ]; then
+	echo
+	echo "This package brings the 1-wire temperature to the GUI and VRM"
+	echo
+	standardActionPrompt
+fi
+
+if [ $scriptAction == 'INSTALL' ]; then
+	logMessage "+++ Installing Temperature Service +++"
+	installService $packageName
+	updateActiveFile "$dtOverlayFile"
+	if [ $(grep -c "w1-gpio" "$configTxt") == 0 ]; then
+		logMessage "activating 1-Wire overlay"
+		{
+			echo "### Changed by Temperature Service ###"
+			echo "dtoverlay=w1-gpio,gpiopin=26"
+			echo "### END Changed by Temperature Service ###"
+		} >> "$configTxt"
+		filesUpdated=true
+	fi
+fi
+
+if [ $scriptAction == 'UNINSTALL' ]; then
+	logMessage "+++ Uninstalling Temperature Service +++"
+	removeService $packageName
+	restoreActiveFile "$dtOverlayFile"
+	if [ -f "$configTxt" ]; then
+		if [ $(grep -c "### Changed by Temperature Service ###" "$configTxt") != 0 ]; then
+			sed -i -e '/### Changed by Temperature Service ###/,/### END Changed by Temperature Service ###/d' "$configTxt"
+			filesUpdated=true
+		fi
+	fi
+fi
+
+if $filesUpdated; then
+	rebootNeeded=true
+fi
+
+endScript
