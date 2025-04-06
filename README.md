@@ -1,9 +1,9 @@
 # Temperature Service
 Fork of LHardwick [Victron-Service](https://github.com/LHardwick-git/Victron-Service)
 
-This is a service to publish 1-Wire temperature data on the D-Bus of Venus OS running on a Raspberry Pi device.
+This is a service to publish CPU and 1-Wire temperature data on the D-Bus of Venus OS running on a Raspberry Pi device.
 
-Please [Support this project](https://www.paypal.com/donate/?hosted_button_id=Q4JE3NZEU9LRU)
+Please [support this project](https://www.paypal.com/donate/?hosted_button_id=Q4JE3NZEU9LRU) to keep it up to date and add more features.
 
 ## Features
 The TemperatureService supports multiple DS18B20 on one bus as well as multiple buses on different GPIOs. 
@@ -24,23 +24,39 @@ The package can be installed via the [SetupHelper](https://github.com/kwindrem/S
 **GitHub user**: hpx64 \
 **GitHub tag**: main
 
-## Configuration
-
-You can use one or more dtoverlay entries in the /u-boot/config.txt
-- dtoverlay=w1-gpio:gpiopin=4
-- dtoverlay=w1-gpio:gpiopin=22
-
-**Example with 2 buses**
-```
-### Changed by Temperature Service ###
-dtoverlay=w1-gpio:gpiopin=4
-dtoverlay=w1-gpio:gpiopin=22
-### END Changed by Temperature Service ###
-```
+You can skip the reboot in SetupHelper and **press Later** if you want to configure the GPIO ports.
+The default port for 1-Wire is GPIO 4.
 
 > [!CAUTION]
 > Please note that there may sometimes be conflicts with already occupied GPIOs. \
-> The 1-Wire GPIO port can be customized with the parameter _gpiopin_ in /u-boot/config.txt after installation.
+> The 1-Wire GPIO port can be customized with the parameter _gpiopin_.
+
+## Configuration
+
+Check or change the configuration in /u-boot/config.txt after installation. If you have made changes, you must reboot.
+
+```bash
+nano /u-boot/config.txt
+```
+
+Add _gpiopin=_ with a colon after dtoverlay=w1-gpio if you need to change the GPIO port.
+
+**Example for GPIO configuration**
+```
+### Changed by Temperature Service ###
+dtoverlay=w1-gpio:gpiopin=17
+### END Changed by Temperature Service ###
+```
+
+You can use one or more dtoverlay entries in the /u-boot/config.txt
+
+**Example for 2 buses**
+```
+### Changed by Temperature Service ###
+dtoverlay=w1-gpio:gpiopin=17
+dtoverlay=w1-gpio:gpiopin=22
+### END Changed by Temperature Service ###
+```
 
 ## Screenshots
 
@@ -62,4 +78,4 @@ dtoverlay=w1-gpio:gpiopin=22
 
 _The service has only been tested on the Raspberry Pi 4 but should work on Pi 3 and Pi 2._
 
-Please [Support this project](https://www.paypal.com/donate/?hosted_button_id=Q4JE3NZEU9LRU)
+Please [support this project](https://www.paypal.com/donate/?hosted_button_id=Q4JE3NZEU9LRU)
